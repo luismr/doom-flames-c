@@ -407,6 +407,16 @@ make test
 make test-quick
 ```
 
+### ⚠️ Windows Testing Note
+
+**Windows builds are tested in CI but marked as non-blocking** to prevent CI failures from blocking development. Windows-specific issues may not be caught automatically.
+
+**For Windows contributors and users:**
+- Please test Windows builds manually on a Windows machine
+- Report any Windows-specific issues in GitHub Issues
+- Windows builds use MinGW/MSYS2 in CI but may behave differently on native Windows
+- Consider testing with both MinGW and Visual Studio compilers if possible
+
 ### Test Results
 
 The test suite validates the recent fixes for:
@@ -566,8 +576,9 @@ The project includes comprehensive GitHub Actions workflows:
 
 **📋 Continuous Integration (`ci.yml`)**
 - **Triggers**: Every push to `main`/`develop`, all pull requests
-- **Platforms**: Ubuntu, macOS, Windows (with MinGW)
+- **Platforms**: Ubuntu, macOS, Windows (with MinGW) 
 - **Tests**: Build verification, test suite execution, cross-platform compatibility
+- **Note**: Windows builds are non-blocking (won't fail PRs) - manual testing recommended
 - **Artifacts**: Build outputs uploaded for 30 days
 
 **🏷️ Automated Releases (`release.yml`)**
