@@ -76,6 +76,7 @@ void signal_handler(int sig);
 // Input handling
 int kbhit(void);
 int getch_nonblocking(void);
+int read_key_sequence(void);
 
 // Global variables
 extern volatile int running;

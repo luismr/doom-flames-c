@@ -219,3 +219,62 @@ int getch_nonblocking(void) {
     return -1;
 #endif
 }
+
+// New function to read escape sequences properly
+int read_key_sequence(void) {
+#ifdef _WIN32
+    if (_kbhit()) {
+        int ch = _getch();
+        if (ch == 224) {  // Extended key prefix on Windows
+            ch = _getch();
+            switch (ch) {
+                case 72: return 1001;  // Up arrow
+                case 80: return 1002;  // Down arrow
+                case 77: return 1003;  // Right arrow
+                case 75: return 1004;  // Left arrow
+            }
+        }
+        return ch;
+    }
+    return -1;
+#else
+    if (!isatty(STDIN_FILENO)) {
+        // Non-interactive mode - read directly
+        return getchar();
+    }
+    
+    // Interactive mode - try to read escape sequences
+    if (kbhit()) {
+        char buffer[4];
+        int bytes_read = read(STDIN_FILENO, buffer, sizeof(buffer));
+        
+        if (bytes_read <= 0) {
+            return -1;
+        }
+        
+        // Single character
+        if (bytes_read == 1) {
+            return (unsigned char)buffer[0];
+        }
+        
+        // Check for escape sequences
+        if (bytes_read >= 3 && buffer[0] == 27 && buffer[1] == '[') {
+            switch (buffer[2]) {
+                case 'A': return 1001;  // Up arrow
+                case 'B': return 1002;  // Down arrow
+                case 'C': return 1003;  // Right arrow
+                case 'D': return 1004;  // Left arrow
+            }
+        }
+        
+        // If it starts with ESC but isn't a recognized sequence, return ESC
+        if (buffer[0] == 27) {
+            return 27;
+        }
+        
+        // Return the first character for other multi-byte sequences
+        return (unsigned char)buffer[0];
+    }
+    return -1;
+#endif
+}

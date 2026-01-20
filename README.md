@@ -87,9 +87,9 @@ While the fire is running, you can use these controls:
 |-----|--------|
 | `q`, `ESC`, `Ctrl+C` | Quit the program |
 | `SPACE` | Toggle pause/resume |
-| `a`, `LEFT` | Set wind direction left |
-| `d`, `RIGHT` | Set wind direction right |
-| `s` | Stop wind (no direction) |
+| `LEFT` arrow, `a`, `A` | Set wind direction left |
+| `RIGHT` arrow, `d`, `D` | Set wind direction right |
+| `s`, `S` | Stop wind (no direction) |
 | `+`, `=` | Increase animation speed |
 | `-`, `_` | Decrease animation speed |
 

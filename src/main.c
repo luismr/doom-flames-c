@@ -15,6 +15,8 @@ void print_usage(const char *program_name) {
     printf("  q, ESC, Ctrl+C        Quit\n");
     printf("  SPACE                 Toggle pause\n");
     printf("  LEFT/RIGHT arrows     Change wind direction\n");
+    printf("  a/d, A/D              Change wind direction (alternative)\n");
+    printf("  s/S                   Stop wind (no direction)\n");
     printf("  +/-                   Increase/decrease speed\n\n");
     printf("Note: For best results, use a terminal with 256-color support.\n");
 }
@@ -74,13 +76,13 @@ int parse_arguments(int argc, char *argv[], int *width, int *height, int *fps, i
 void handle_input(Fire *fire, int *paused, int *fps, int *frame_delay) {
     if (!kbhit()) return;
     
-    int ch = getch_nonblocking();
+    int ch = read_key_sequence();
     if (ch == -1) return;
     
     switch (ch) {
         case 'q':
         case 'Q':
-        case 27:  // ESC key
+        case 27:  // Lone ESC key
             running = 0;
             break;
             
@@ -88,18 +90,25 @@ void handle_input(Fire *fire, int *paused, int *fps, int *frame_delay) {
             *paused = !(*paused);
             break;
             
-        case 'a':  // Left arrow or 'a' - wind left
-        case 75:   // Left arrow (some terminals)
+        case 'a':  // 'a' - wind left
+        case 'A':
+        case 1004:  // Left arrow
             fire->wind_direction = -1;
             break;
             
-        case 'd':  // Right arrow or 'd' - wind right
-        case 77:   // Right arrow (some terminals)
+        case 'd':  // 'd' - wind right
+        case 'D':
+        case 1003:  // Right arrow
             fire->wind_direction = 1;
             break;
             
         case 's':  // 's' - no wind
+        case 'S':
             fire->wind_direction = 0;
+            break;
+            
+        case 1001:  // Up arrow - no action for now
+        case 1002:  // Down arrow - no action for now
             break;
             
         case '+':
