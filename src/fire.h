@@ -1,6 +1,13 @@
 #ifndef FIRE_H
 #define FIRE_H
 
+// Feature test macros must be defined before any includes
+#ifndef _WIN32
+    #define _DEFAULT_SOURCE  // For usleep() on modern glibc
+    #define _BSD_SOURCE      // For usleep() on older glibc
+    #define _POSIX_C_SOURCE 200809L  // For POSIX functions
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
