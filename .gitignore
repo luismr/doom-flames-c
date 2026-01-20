@@ -1,0 +1,136 @@
+# DOOM Fire Effect - .gitignore
+
+# Build artifacts
+build/
+*.o
+*.obj
+*.exe
+*.out
+*.app
+*.dSYM/
+
+# Executable names
+doomfire
+doomfire.exe
+
+# Compiler and linker files
+*.a
+*.lib
+*.so
+*.dll
+*.dylib
+
+# Debug files
+*.pdb
+*.ilk
+*.map
+*.dmp
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# OS specific files
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.nfs*
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+*.bak
+*.backup
+*.orig
+*.rej
+
+# Package files
+*.tar.gz
+*.zip
+*.7z
+*.rar
+
+# Distribution packages
+doomfire-*-*.tar.gz
+doomfire-*-*.zip
+
+# Core dumps
+core
+core.*
+vgcore.*
+
+# Profiling data
+gmon.out
+*.gcno
+*.gcda
+*.gcov
+
+# Static analysis
+cppcheck-*.xml
+scan-build-*/
+
+# Memory debugging
+valgrind-*.log
+*.memcheck
+
+# Test artifacts
+test_output/
+*.test
+
+# Documentation build
+docs/build/
+*.pdf
+
+# Local configuration
+.env
+local.mk
+config.local
+
+# Backup files created by editors
+*~
+*.bak
+*.backup
+*.swp
+*.swo
+
+# Tags files
+tags
+TAGS
+.tags
+.TAGS
+
+# ctags and etags
+*.tags
+
+# Patch files
+*.patch
+*.diff
+
+# Temporary build scripts
+build_temp.sh
+compile_temp.sh
