@@ -1,0 +1,136 @@
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  pr-validation:
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Validate PR title
+      uses: amannn/action-semantic-pull-request@v5
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        # Configure allowed types
+        types: |
+          feat
+          fix
+          docs
+          style
+          refactor
+          perf
+          test
+          build
+          ci
+          chore
+        # Require scope for certain types
+        requireScope: false
+        # Allow custom scopes
+        scopes: |
+          fire
+          terminal
+          build
+          ci
+          docs
+          tests
+        # Validate subject case
+        subjectPattern: ^(?![A-Z]).+$
+        subjectPatternError: |
+          The subject "{subject}" found in the pull request title "{title}"
+          didn't match the configured pattern. Please ensure that the subject
+          doesn't start with an uppercase character.
+
+  changelog-check:
+    name: Check if changelog update needed
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.base.ref == 'main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Check for significant changes
+      id: check_changes
+      run: |
+        # Get list of changed files
+        CHANGED_FILES=$(git diff --name-only origin/main...HEAD)
+        echo "Changed files:"
+        echo "$CHANGED_FILES"
+        
+        # Check if any source files were changed
+        if echo "$CHANGED_FILES" | grep -E "\.(c|h)$"; then
+          echo "source_changed=true" >> $GITHUB_OUTPUT
+          echo "Source code changes detected"
+        else
+          echo "source_changed=false" >> $GITHUB_OUTPUT
+          echo "No source code changes detected"
+        fi
+        
+        # Check if new features were added
+        if echo "$CHANGED_FILES" | grep -E "(main\.c|fire\.c)" && git diff origin/main...HEAD | grep -E "^\+.*\b(new|add|feature)\b"; then
+          echo "feature_added=true" >> $GITHUB_OUTPUT
+          echo "New feature detected"
+        else
+          echo "feature_added=false" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Comment on PR if changelog needed
+      if: steps.check_changes.outputs.source_changed == 'true'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: context.issue.number,
+          });
+          
+          const botComment = comments.find(comment => 
+            comment.user.type === 'Bot' && 
+            comment.body.includes('📝 Changelog Update')
+          );
+          
+          if (!botComment) {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `📝 **Changelog Update Reminder**
+              
+              This PR includes source code changes. Please consider:
+              
+              - [ ] Update README.md if new features were added
+              - [ ] Add examples for new command-line options
+              - [ ] Update help text if CLI changed
+              - [ ] Test on multiple platforms if core algorithm changed
+              
+              Thank you for contributing! 🔥`
+            });
+          }
+
+  security-check:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run security scan
+      uses: github/super-linter@v4
+      env:
+        DEFAULT_BRANCH: main
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VALIDATE_ALL_CODEBASE: false
+        VALIDATE_C: true
+        VALIDATE_MARKDOWN: true
+        VALIDATE_YAML: true
