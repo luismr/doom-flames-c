@@ -53,6 +53,18 @@ else ifeq ($(findstring MSYS,$(UNAME_S)),MSYS)
     CFLAGS += -D_WIN32
     LIBS += -lkernel32 -luser32
     TARGET = $(PROJECT_NAME).exe
+else ifeq ($(findstring CYGWIN,$(UNAME_S)),CYGWIN)
+    # Windows with Cygwin
+    PLATFORM = windows
+    CFLAGS += -D_WIN32
+    LIBS += -lkernel32 -luser32
+    TARGET = $(PROJECT_NAME).exe
+else ifeq ($(UNAME_S),Windows)
+    # Windows (fallback)
+    PLATFORM = windows
+    CFLAGS += -D_WIN32
+    LIBS += -lkernel32 -luser32
+    TARGET = $(PROJECT_NAME).exe
 else
     # Default to Unix-like
     PLATFORM = unix
@@ -166,6 +178,8 @@ info:
 	@echo "Target: $(TARGET_PATH)"
 	@echo "CFLAGS: $(CFLAGS)"
 	@echo "LDFLAGS: $(LDFLAGS)"
+	@echo "UNAME_S: '$(UNAME_S)'"
+	@echo "Raw uname: $(shell uname -s 2>/dev/null || echo 'Windows_NT')"
 	@echo "LIBS: $(LIBS)"
 
 # Package for distribution
